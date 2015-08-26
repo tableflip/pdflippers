@@ -5,6 +5,6 @@ This module will turn a .md file into a .pdf and wrap the output in TABLEFLIP br
 ## Usage
 
 ```
-node render [relative/path/to/file.md] [optional desination]
+node render [relative/path/to/file.md] [optional/destination]
 ```
-The default desination for the generated file is your Desktop
+The default destination for the generated file is your Desktop
