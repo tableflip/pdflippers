@@ -17,8 +17,10 @@ fs.readFile(pathToDoc, function (err, content) {
 })
 
 function openFile (filename) {
-  fs.open(filename, 'r', function (err, exists) {
-    if (err) throw new Error(err)
+  fs.open('./' + filename, 'r', function (err, exists) {
+    if (err) {
+      if(err.errno !== -2) throw new Error(err)
+    }
     if (exists) {
       var cmd = 'mv ' + filename + ' ' + destination+filename + ' && open ' + destination+filename
       exec(cmd, function (err) {
