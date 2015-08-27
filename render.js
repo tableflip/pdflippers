@@ -2,40 +2,55 @@ var markdawn = require('markdawn')
 var fs = require('fs')
 var path = require('path')
 var exec = require('child_process').exec
+var async = require('async')
 
-var pathToDoc = process.argv[2]
-var location = process.argv[3] || '~/Desktop/'
-var filename = 'TABLEFLIP-' + path.parse(pathToDoc).name + '.pdf'
-location = location+filename
+module.exports = function (md, opts) {
+  async.waterfall([
+    function (cb) {
+      readFile(md, opts, cb)
+    },
+    function (outputDir, opts, cb) {
+      processFile(outputDir, opts, cb)
+    }
+  ], done)  
+}
 
-fs.readFile(pathToDoc, function (err, content) {
-  if (err) throw new Error(err)
-  markdawn.generate(content.toString(), {
-    index: './theme/index.html',
-    out: filename
+function readFile (md, opts, cb) {
+  fs.readFile(md, function (err, content) {
+    if (err) return cb(err)
+
+    var options = {
+      index: './theme/index.html',
+      out: 'TABLEFLIP-' + path.parse(md).name + '.pdf'
+    }
+
+    var dir = opts.output || process.cwd()
+
+    var outputDir = path.join(dir, options.out)
+
+    var output = markdawn.generate(content.toString(), options)
+
+    if (opts.html) process.stdout.write(output)
+
+    cb(null, outputDir, opts)
   })
-  openFile(filename)
-})
+}
 
-function openFile (filename) {
-  fs.open('./' + filename, 'r', function (err, itExists) {
+function processFile (outputDir, opts, cb) {
+  fs.open(outputDir, 'r', function (err, fileExists) {
 
     if (err && err.errno !== -2) throw new Error(err)
 
-    if (itExists) {
-
-      var move = 'mv ' + filename + ' ' + location
-      var open = 'open ' + location
-      
-      exec(move + '&&' + open, function (err) {
-        if (err) throw new Error(err)
-        process.exit()
-      })
-
-    }else{
-      setTimeout(function () {
-        openFile(filename)
-      }, 250)
+    if (fileExists) {
+      cb(null, outputDir)
+    } else {
+      processFile(outputDir, opts, cb)
     }
   })
+}
+
+function done (err, destination) {
+  if (err) throw new Error(err)
+  console.log('CREATED ', destination)
+  process.exit()
 }

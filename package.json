@@ -4,13 +4,18 @@
   "description": "create TABLEFLIP branded .pdfs from .md files",
   "main": "render.js",
   "dependencies": {
-    "markdawn": "^0.1.3"
+    "async": "^1.4.2",
+    "markdawn": "^0.1.3",
+    "nomnom": "^1.8.1"
+  },
+  "bin": {
+    "pdflip": "bin/pdflip.js"
   },
   "devDependencies": {},
   "scripts": {
-    "start": "node render.js",
+    "start": "bin/pdflip.js",
     "test": "standard"
   },
-  "author": "Bernard Mordan <bernard@tableflip.io> (http://github.com/bmordan)",
+  "author": "Bernard Mordan <bernard@tableflip.io> (http://github.com/tableflip)",
   "license": "ISC"
 }

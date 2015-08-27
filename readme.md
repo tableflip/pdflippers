@@ -5,6 +5,15 @@ This module will turn a .md file into a .pdf and wrap the output in TABLEFLIP br
 ## Usage
 
 ```
-node render [relative/path/to/file.md] [optional/destination]
+npm install -g pdflip
 ```
-The default destination for the generated file is your Desktop
+
+```sh
+Usage: pdflip <path>... [options]
+
+path     you have to pass in the path to your .md file
+
+Options:
+   -o, --output   specify the output destination for your .pdf file
+   -h, --html     output just the html to stdout (exits process)
+```
