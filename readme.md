@@ -5,9 +5,9 @@ This module will turn a .md file into a .pdf and wrap the output in TABLEFLIP br
 
 ## Usage
 
-```
-npm install -g pdflip
-```
+Clone the repo `cd` into the folder and `npm install` then run `npm link`
+
+now you can use the command throughout your file system like this:
 
 ```sh
 Usage: pdflip <path>... [options]
