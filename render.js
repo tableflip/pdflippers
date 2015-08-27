@@ -4,8 +4,9 @@ var path = require('path')
 var exec = require('child_process').exec
 
 var pathToDoc = process.argv[2]
-var destination = process.argv[3] || '~/Desktop/'
+var location = process.argv[3] || '~/Desktop/'
 var filename = 'TABLEFLIP-' + path.parse(pathToDoc).name + '.pdf'
+location = location+filename
 
 fs.readFile(pathToDoc, function (err, content) {
   if (err) throw new Error(err)
@@ -17,16 +18,20 @@ fs.readFile(pathToDoc, function (err, content) {
 })
 
 function openFile (filename) {
-  fs.open('./' + filename, 'r', function (err, exists) {
-    if (err) {
-      if(err.errno !== -2) throw new Error(err)
-    }
-    if (exists) {
-      var cmd = 'mv ' + filename + ' ' + destination+filename + ' && open ' + destination+filename
-      exec(cmd, function (err) {
+  fs.open('./' + filename, 'r', function (err, itExists) {
+
+    if (err && err.errno !== -2) throw new Error(err)
+
+    if (itExists) {
+
+      var move = 'mv ' + filename + ' ' + location
+      var open = 'open ' + location
+      
+      exec(move + '&&' + open, function (err) {
         if (err) throw new Error(err)
         process.exit()
       })
+
     }else{
       setTimeout(function () {
         openFile(filename)
