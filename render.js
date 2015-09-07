@@ -4,10 +4,10 @@ var path = require('path')
 var exec = require('child_process').exec
 var async = require('async')
 
-module.exports = function (md, opts) {
+module.exports = function (mdFile, opts) {
   async.waterfall([
     function (cb) {
-      readFile(md, opts, cb)
+      readFile(mdFile, opts, cb)
     },
     function (outputDir, opts, cb) {
       processFile(outputDir, opts, cb)
@@ -15,36 +15,41 @@ module.exports = function (md, opts) {
   ], done)  
 }
 
-function readFile (md, opts, cb) {
-  fs.readFile(md, function (err, content) {
+function readFile (mdFile, opts, cb) {
+  fs.readFile(mdFile, function (err, content) {
     if (err) return cb(err)
-
     var options = {
-      index: './theme/index.html',
-      out: 'TABLEFLIP-' + path.parse(md).name + '.pdf'
+      index: __dirname + '/theme/index.html',
+      out: 'TABLEFLIP-' + path.parse(mdFile).name + '.pdf'
     }
 
-    var dir = opts.output || process.cwd()
-
-    var outputDir = path.join(dir, options.out)
+    var dir = process.cwd()
 
     var output = markdawn.generate(content.toString(), options)
 
     if (opts.html) process.stdout.write(output)
-
-    cb(null, outputDir, opts)
+    
+    cb(null, options.out, opts)
   })
 }
 
-function processFile (outputDir, opts, cb) {
-  fs.open(outputDir, 'r', function (err, fileExists) {
-
+function processFile (output, opts, cb) {
+  fs.open(output, 'r', function (err, fileExists) {
     if (err && err.errno !== -2) throw new Error(err)
+    if (fileExists && !opts.output) {
 
-    if (fileExists) {
-      cb(null, outputDir)
+      return cb(null, output)
+
+    } else if (fileExists && opts.output[0]) {
+
+      var destination = path.join(opts.output[0], output)
+      exec('mv ' + output + ' ' + destination, function (err) {
+        if (err) throw new Error(err)
+        return cb(null, destination)
+      })
+
     } else {
-      processFile(outputDir, opts, cb)
+      processFile(output, opts, cb)
     }
   })
 }
